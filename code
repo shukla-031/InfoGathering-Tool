@@ -1,0 +1,38 @@
+import sys
+import requests
+import json
+import socket
+
+def get_ip(d):
+    try:
+        return socket.gethostbyname(d)
+    except:
+        print("Error: Could not get IP")
+        sys.exit(1)
+
+def get_info(i):
+    try:
+        u = f"https://ipinfo.io/{i}/json"
+        r = requests.get(u, timeout=5)
+        r.raise_for_status()
+        return r.json()
+    except:
+        print("Error: Failed to fetch info")
+        sys.exit(1)
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python infogather.py <domain>")
+        sys.exit(1)
+
+    d = sys.argv[1].replace('https://', '').replace('http://', '').split('/')[0]
+    i = get_ip(d)
+    data = get_info(i)
+
+    print("\nDomain:", d)
+    print("IP:", i)
+    print("Info:")
+    print(json.dumps(data, indent=4))
+
+if __name__ == "__main__":
+    main()
